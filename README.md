@@ -1,0 +1,2 @@
+- Designed and developed robust RESTful APIs for managing vehicles, bookings, and pricing workflows.  
+- Optimized a relational MySQL database schema to ensure efficient and seamless handling of vehicle and booking data.  
