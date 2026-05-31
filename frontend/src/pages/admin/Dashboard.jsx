@@ -93,26 +93,19 @@ export default function Dashboard() {
       {stats?.recentBookings?.length > 0 && (
         <div className="bg-white rounded-xl sm:rounded-2xl p-4 sm:p-6 shadow-sm border border-gray-100">
           <h2 className="text-base sm:text-lg font-bold text-gray-900 mb-4">Recent Bookings</h2>
-          <div className="-mx-4 sm:mx-0">
-            <div className="overflow-x-auto px-4 sm:px-0">
-              <table className="w-full text-xs sm:text-sm min-w-[500px]">
-              <thead><tr className="text-gray-500 border-b border-gray-200">
-                <th className="text-left py-3 px-2">Vehicle</th><th className="text-left py-3 px-2">Customer</th>
-                <th className="text-left py-3 px-2">Hours</th><th className="text-left py-3 px-2">Amount</th><th className="text-left py-3 px-2">Status</th>
-              </tr></thead>
-              <tbody>
-                {stats.recentBookings.map((b, i) => (
-                  <tr key={i} className="border-b border-gray-100">
-                    <td className="py-3 px-2 text-gray-900 font-medium">{b.vehicleName || '-'}</td>
-                    <td className="py-3 px-2 text-gray-600">{b.customerName || '-'}</td>
-                    <td className="py-3 px-2 text-gray-600">{b.startTime != null && b.endTime != null ? `${b.startTime}:00-${b.endTime}:00 (${b.endTime - b.startTime}h)` : '-'}</td>
-                    <td className="py-3 px-2 text-gray-600">₹{b.totalPrice || 0}</td>
-                    <td className="py-3 px-2"><span className={`text-xs px-2 py-1 rounded-full ${b.status === 'ACTIVE' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}`}>{b.status}</span></td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-            </div>
+          <div className="space-y-2">
+            {stats.recentBookings.map((b, i) => (
+              <div key={i} className="flex items-center justify-between py-2.5 border-b border-gray-100 last:border-0">
+                <div className="min-w-0 flex-1">
+                  <span className="text-sm font-medium text-gray-900">{b.vehicleName || '-'}</span>
+                  <span className="text-xs text-gray-400 ml-2">{b.customerName || ''}</span>
+                </div>
+                <div className="flex items-center gap-3 shrink-0">
+                  <span className="text-sm text-gray-600">₹{b.totalPrice || 0}</span>
+                  <span className={`text-[10px] px-2 py-0.5 rounded-full ${b.status === 'ACTIVE' ? 'bg-amber-100 text-amber-700' : b.status === 'COMPLETED' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}`}>{b.status}</span>
+                </div>
+              </div>
+            ))}
           </div>
         </div>
       )}

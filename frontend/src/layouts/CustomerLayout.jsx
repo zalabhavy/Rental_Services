@@ -1,9 +1,14 @@
 import { Outlet, Link, useLocation, useNavigate } from 'react-router-dom';
+import { useContext, useEffect } from 'react';
 import { FiTruck, FiHome, FiGrid, FiMapPin, FiCalendar, FiChevronDown } from 'react-icons/fi';
+import { CustomerContext } from '../App';
+import { getBookings } from '../api';
 
 export default function CustomerLayout() {
   const { pathname } = useLocation();
   const navigate = useNavigate();
+  const { currentCustomer, setCurrentCustomer, customers, setCustomers } = useContext(CustomerContext);
+
   const links = [
     { to: '/customer', icon: FiHome, label: 'Home', exact: true },
     { to: '/customer/vehicles', icon: FiGrid, label: 'Vehicles' },
@@ -11,8 +16,32 @@ export default function CustomerLayout() {
     { to: '/customer/bookings', icon: FiCalendar, label: 'Bookings' },
   ];
 
-  const handleRoleSwitch = (e) => {
-    navigate(e.target.value);
+  // Load unique customers from bookings
+  useEffect(() => {
+    getBookings().then(r => {
+      const bookings = r.data?.data || [];
+      const seen = new Map();
+      bookings.forEach(b => {
+        if (b.customerName && !seen.has(b.customerName)) {
+          seen.set(b.customerName, { name: b.customerName, email: b.customerEmail || '', phone: '' });
+        }
+      });
+      const list = Array.from(seen.values());
+      setCustomers(list);
+      if (!currentCustomer && list.length > 0) {
+        setCurrentCustomer(list[0]);
+      }
+    }).catch(() => {});
+  }, []);
+
+  const handleCustomerChange = (e) => {
+    const name = e.target.value;
+    if (name === '__new__') {
+      setCurrentCustomer({ name: '', email: '', phone: '' });
+    } else {
+      const c = customers.find(c => c.name === name);
+      if (c) setCurrentCustomer(c);
+    }
   };
 
   return (
@@ -23,7 +52,7 @@ export default function CustomerLayout() {
             <div className="flex items-center gap-2 sm:gap-6">
               <Link to="/customer" className="flex items-center gap-1.5 sm:gap-2">
                 <FiTruck className="text-blue-600 text-xl sm:text-2xl" />
-                <span className="text-base sm:text-xl font-bold text-gray-900">RentWheels</span>
+                <span className="text-base sm:text-xl font-bold text-gray-900 hidden sm:inline">RentWheels</span>
               </Link>
               <div className="hidden md:flex items-center gap-1 ml-4">
                 {links.map(l => {
@@ -38,11 +67,17 @@ export default function CustomerLayout() {
               </div>
             </div>
             <div className="relative">
-              <select onChange={handleRoleSwitch} defaultValue="/customer"
-                className="appearance-none bg-blue-50 text-blue-700 text-xs font-medium pl-3 pr-7 py-1.5 rounded-full border-0 focus:ring-2 focus:ring-blue-300 focus:outline-none cursor-pointer">
-                <option value="/customer">Customer</option>
-                <option value="/admin">Admin</option>
-                <option value="/">Home</option>
+              <select
+                value={currentCustomer?.name || ''}
+                onChange={handleCustomerChange}
+                className="appearance-none bg-blue-50 text-blue-700 text-xs font-medium pl-3 pr-6 py-1.5 rounded-full border-0 focus:ring-2 focus:ring-blue-300 focus:outline-none cursor-pointer max-w-[140px] sm:max-w-[200px] truncate"
+              >
+                {customers.map(c => (
+                  <option key={c.name} value={c.name}>{c.name}</option>
+                ))}
+                <option value="__new__">+ New Customer</option>
+                <option value="" disabled>──────────</option>
+                <option value="__admin__" onClick={() => navigate('/admin')}>Switch to Admin</option>
               </select>
               <FiChevronDown className="absolute right-2 top-1/2 -translate-y-1/2 text-blue-500 pointer-events-none" size={12} />
             </div>

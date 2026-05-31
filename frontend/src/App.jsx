@@ -1,6 +1,6 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { Toaster } from 'react-hot-toast';
-import { useState } from 'react';
+import { useState, createContext } from 'react';
 import RoleSelector from './pages/RoleSelector';
 import CustomerLayout from './layouts/CustomerLayout';
 import AdminLayout from './layouts/AdminLayout';
@@ -14,28 +14,35 @@ import AdminBranches from './pages/admin/Branches';
 import AdminVehicles from './pages/admin/Vehicles';
 import AdminBookings from './pages/admin/Bookings';
 
+export const CustomerContext = createContext();
+
 function App() {
+  const [currentCustomer, setCurrentCustomer] = useState(null); // { name, email, phone }
+  const [customers, setCustomers] = useState([]);
+
   return (
     <>
       <Toaster position="top-right" toastOptions={{ duration: 3000, style: { borderRadius: '12px', background: '#1e293b', color: '#fff' } }} />
-      <BrowserRouter>
-        <Routes>
-          <Route path="/" element={<RoleSelector />} />
-          <Route path="/customer" element={<CustomerLayout />}>
-            <Route index element={<Home />} />
-            <Route path="vehicles" element={<Vehicles />} />
-            <Route path="vehicles/:id" element={<VehicleDetail />} />
-            <Route path="branches" element={<Branches />} />
-            <Route path="bookings" element={<MyBookings />} />
-          </Route>
-          <Route path="/admin" element={<AdminLayout />}>
-            <Route index element={<AdminDashboard />} />
-            <Route path="branches" element={<AdminBranches />} />
-            <Route path="vehicles" element={<AdminVehicles />} />
-            <Route path="bookings" element={<AdminBookings />} />
-          </Route>
-        </Routes>
-      </BrowserRouter>
+      <CustomerContext.Provider value={{ currentCustomer, setCurrentCustomer, customers, setCustomers }}>
+        <BrowserRouter>
+          <Routes>
+            <Route path="/" element={<RoleSelector />} />
+            <Route path="/customer" element={<CustomerLayout />}>
+              <Route index element={<Home />} />
+              <Route path="vehicles" element={<Vehicles />} />
+              <Route path="vehicles/:id" element={<VehicleDetail />} />
+              <Route path="branches" element={<Branches />} />
+              <Route path="bookings" element={<MyBookings />} />
+            </Route>
+            <Route path="/admin" element={<AdminLayout />}>
+              <Route index element={<AdminDashboard />} />
+              <Route path="branches" element={<AdminBranches />} />
+              <Route path="vehicles" element={<AdminVehicles />} />
+              <Route path="bookings" element={<AdminBookings />} />
+            </Route>
+          </Routes>
+        </BrowserRouter>
+      </CustomerContext.Provider>
     </>
   );
 }

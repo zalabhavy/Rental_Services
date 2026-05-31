@@ -1,7 +1,8 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useContext } from 'react';
 import { motion } from 'framer-motion';
-import { FiCalendar, FiClock, FiXCircle, FiCheckCircle, FiAlertCircle, FiEdit2, FiX, FiUser } from 'react-icons/fi';
+import { FiCalendar, FiClock, FiXCircle, FiCheckCircle, FiAlertCircle, FiEdit2, FiX } from 'react-icons/fi';
 import { getBookings, cancelBooking, bookVehicle } from '../../api';
+import { CustomerContext } from '../../App';
 import ConfirmModal from '../../components/ConfirmModal';
 import toast from 'react-hot-toast';
 
@@ -11,13 +12,18 @@ export default function MyBookings() {
   const [confirmCancel, setConfirmCancel] = useState(null);
   const [editBooking, setEditBooking] = useState(null);
   const [editForm, setEditForm] = useState({ startTime: '', endTime: '', customerName: '', customerEmail: '', customerPhone: '' });
-  const [selectedCustomer, setSelectedCustomer] = useState('');
+  const { currentCustomer } = useContext(CustomerContext);
 
   const load = () => {
     setLoading(true);
     getBookings().then(r => setBookings(r.data?.data || [])).catch(() => {}).finally(() => setLoading(false));
   };
   useEffect(() => { load(); }, []);
+
+  // Filter by selected customer
+  const filtered = currentCustomer?.name
+    ? bookings.filter(b => b.customerName === currentCustomer.name)
+    : bookings;
 
   const handleCancel = async () => {
     const id = confirmCancel;
@@ -44,10 +50,6 @@ export default function MyBookings() {
     } catch (err) { toast.error(err.response?.data?.message || 'Update failed'); }
   };
 
-  // Get unique customer names for filter
-  const customerNames = [...new Set(bookings.map(b => b.customerName).filter(Boolean))].sort();
-  const filtered = selectedCustomer ? bookings.filter(b => b.customerName === selectedCustomer) : bookings;
-
   const statusColors = { ACTIVE: 'bg-amber-100 text-amber-700', COMPLETED: 'bg-green-100 text-green-700', CANCELLED: 'bg-red-100 text-red-700' };
   const statusIcons = { ACTIVE: FiCheckCircle, COMPLETED: FiCheckCircle, CANCELLED: FiXCircle };
 
@@ -55,29 +57,19 @@ export default function MyBookings() {
 
   return (
     <div>
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
-        <div>
-          <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">My Bookings</h1>
-          <p className="text-gray-500 mt-1 text-sm">View and manage your vehicle rentals</p>
-        </div>
-        {customerNames.length > 1 && (
-          <div className="relative">
-            <FiUser className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={14} />
-            <select value={selectedCustomer} onChange={e => setSelectedCustomer(e.target.value)}
-              className="pl-9 pr-4 py-2.5 rounded-xl border border-gray-200 text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none bg-white text-gray-700 w-full sm:w-auto min-w-[200px]">
-              <option value="">All Customers ({bookings.length})</option>
-              {customerNames.map(name => (
-                <option key={name} value={name}>{name} ({bookings.filter(b => b.customerName === name).length})</option>
-              ))}
-            </select>
-          </div>
-        )}
+      <div className="mb-6">
+        <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">
+          {currentCustomer?.name ? `${currentCustomer.name}'s Bookings` : 'My Bookings'}
+        </h1>
+        <p className="text-gray-500 mt-1 text-sm">
+          {filtered.length} booking{filtered.length !== 1 ? 's' : ''} found
+        </p>
       </div>
 
       {filtered.length === 0 ? (
         <div className="text-center py-16 bg-white rounded-2xl border border-gray-100">
           <FiCalendar className="mx-auto text-4xl text-gray-300 mb-4" />
-          <h3 className="text-lg font-semibold text-gray-700">{selectedCustomer ? 'No bookings for this customer' : 'No bookings yet'}</h3>
+          <h3 className="text-lg font-semibold text-gray-700">No bookings yet</h3>
           <p className="text-gray-400 mt-1">Book a vehicle to see it here</p>
         </div>
       ) : (
@@ -100,8 +92,7 @@ export default function MyBookings() {
                       {b.branchName && <span>📍 {b.branchName}</span>}
                       {b.totalPrice && <span className="font-semibold text-gray-700">₹{b.totalPrice}</span>}
                     </div>
-                    {b.customerName && <p className="text-xs text-gray-400 mt-1">👤 {b.customerName}{b.customerEmail ? ` (${b.customerEmail})` : ''}</p>}
-                    {b.bookingDate && <p className="text-xs text-gray-400">{new Date(b.bookingDate).toLocaleString()}</p>}
+                    {b.bookingDate && <p className="text-xs text-gray-400 mt-1">{new Date(b.bookingDate).toLocaleString()}</p>}
                   </div>
                   {b.status === 'ACTIVE' && (
                     <div className="flex gap-2 w-full sm:w-auto shrink-0">
@@ -120,7 +111,6 @@ export default function MyBookings() {
         </div>
       )}
 
-      {/* Edit Modal */}
       {editBooking && (
         <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-end sm:items-center justify-center z-50 p-0 sm:p-4">
           <motion.div initial={{ opacity: 0, y: 40 }} animate={{ opacity: 1, y: 0 }}
