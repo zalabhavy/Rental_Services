@@ -1,0 +1,138 @@
+import { useEffect, useState } from 'react';
+import { motion } from 'framer-motion';
+import { FiCalendar, FiClock, FiXCircle, FiCheckCircle, FiAlertCircle } from 'react-icons/fi';
+import { getBookings, cancelBooking } from '../../api';
+import ConfirmModal from '../../components/ConfirmModal';
+import toast from 'react-hot-toast';
+
+export default function MyBookings() {
+  const [bookings, setBookings] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [confirmCancel, setConfirmCancel] = useState(null);
+
+  const load = () => {
+    setLoading(true);
+    getBookings()
+      .then(r => setBookings(r.data?.data || []))
+      .catch(() => {})
+      .finally(() => setLoading(false));
+  };
+
+  useEffect(() => {
+    load();
+  }, []);
+
+  const handleCancel = async () => {
+    const id = confirmCancel;
+    setConfirmCancel(null);
+    try {
+      await cancelBooking(id);
+      toast.success('Booking cancelled');
+      load();
+    } catch (err) {
+      toast.error(err.response?.data?.message || 'Cancel failed');
+    }
+  };
+
+  const statusColors = {
+    ACTIVE: 'bg-green-100 text-green-700',
+    CANCELLED: 'bg-red-100 text-red-700',
+  };
+  const statusIcons = {
+    ACTIVE: FiCheckCircle,
+    CANCELLED: FiXCircle,
+  };
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center h-64">
+        <div className="animate-spin w-8 h-8 border-4 border-blue-500 border-t-transparent rounded-full"></div>
+      </div>
+    );
+  }
+
+  return (
+    <div>
+      <div className="mb-8">
+        <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">My Bookings</h1>
+        <p className="text-gray-500 mt-1 text-sm">View and manage your vehicle rentals</p>
+      </div>
+
+      {bookings.length === 0 ? (
+        <div className="text-center py-16 bg-white rounded-2xl border border-gray-100">
+          <FiCalendar className="mx-auto text-4xl text-gray-300 mb-4" />
+          <h3 className="text-lg font-semibold text-gray-700">No bookings yet</h3>
+          <p className="text-gray-400 mt-1">Book a vehicle to see it here</p>
+        </div>
+      ) : (
+        <div className="space-y-4">
+          {bookings.map((b, i) => {
+            const StatusIcon = statusIcons[b.status] || FiAlertCircle;
+            return (
+              <motion.div
+                key={b.bookingId || i}
+                initial={{ opacity: 0, x: -20 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ delay: 0.05 * i }}
+                className="bg-white rounded-2xl p-4 sm:p-6 shadow-sm border border-gray-100"
+              >
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-2 flex-wrap mb-2">
+                      <h3 className="text-lg font-bold text-gray-900">
+                        {b.vehicleName || b.vehicleType}
+                      </h3>
+                      <span
+                        className={`text-xs px-2 py-1 rounded-full font-medium flex items-center gap-1 ${
+                          statusColors[b.status] || 'bg-gray-100 text-gray-600'
+                        }`}
+                      >
+                        <StatusIcon size={12} /> {b.status}
+                      </span>
+                    </div>
+                    <div className="flex flex-wrap gap-x-4 gap-y-1 text-sm text-gray-500">
+                      <span className="flex items-center gap-1">
+                        <FiClock size={14} /> {b.startTime}:00 — {b.endTime}:00 ({b.endTime - b.startTime}h)
+                      </span>
+                      {b.branchName && <span>📍 {b.branchName}</span>}
+                      <span>₹{b.pricePerHour}/hr</span>
+                      {b.totalPrice && (
+                        <span className="font-semibold text-gray-700">Total: ₹{b.totalPrice}</span>
+                      )}
+                    </div>
+                    {b.customerName && (
+                      <p className="text-xs text-gray-400 mt-2">Booked by: {b.customerName}</p>
+                    )}
+                    {b.bookingDate && (
+                      <p className="text-xs text-gray-400">
+                        Date: {new Date(b.bookingDate).toLocaleString()}
+                      </p>
+                    )}
+                  </div>
+                  {b.status === 'ACTIVE' && (
+                    <button
+                      onClick={() => setConfirmCancel(b.bookingId)}
+                      className="px-4 py-2.5 bg-red-50 text-red-600 rounded-xl text-sm font-medium hover:bg-red-100 transition flex items-center justify-center gap-1 w-full sm:w-auto"
+                    >
+                      <FiXCircle size={14} /> Cancel
+                    </button>
+                  )}
+                </div>
+              </motion.div>
+            );
+          })}
+        </div>
+      )}
+
+      <ConfirmModal
+        open={!!confirmCancel}
+        title="Cancel Booking"
+        message="Are you sure you want to cancel this booking? You may be charged a cancellation fee."
+        confirmText="Yes, Cancel"
+        onConfirm={handleCancel}
+        onCancel={() => setConfirmCancel(null)}
+        danger
+      />
+    </div>
+  );
+}

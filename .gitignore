@@ -1,0 +1,31 @@
+# Dependencies
+rental/target/
+frontend/node_modules/
+frontend/dist/
+
+# Environment files (contain secrets)
+frontend/.env
+frontend/.env.local
+frontend/.env.production.local
+rental/src/main/resources/application-local.properties
+
+# IDE
+.idea/
+*.iml
+.vscode/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+nohup.out
+/tmp/
+
+# Build
+*.class
+*.jar
+!rental/mvnw.jar
