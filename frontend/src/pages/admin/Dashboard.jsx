@@ -24,27 +24,27 @@ export default function Dashboard() {
 
   return (
     <div>
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold text-gray-900">Dashboard</h1>
-        <p className="text-gray-500 mt-1">Overview of your rental business</p>
+      <div className="mb-6 sm:mb-8">
+        <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">Dashboard</h1>
+        <p className="text-gray-500 mt-1 text-sm">Overview of your rental business</p>
       </div>
 
-      <div className="grid grid-cols-2 lg:grid-cols-3 gap-4 mb-8">
+      <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 sm:gap-4 mb-6 sm:mb-8">
         {cards.map((c, i) => (
           <motion.div key={i} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.05 * i }}
-            className="bg-white rounded-2xl p-5 shadow-sm border border-gray-100">
-            <div className={`w-10 h-10 ${c.bg} rounded-xl flex items-center justify-center mb-3`}>
-              <c.icon className={`${c.ic} text-lg`} />
+            className="bg-white rounded-xl sm:rounded-2xl p-3 sm:p-5 shadow-sm border border-gray-100">
+            <div className={`w-8 h-8 sm:w-10 sm:h-10 ${c.bg} rounded-lg sm:rounded-xl flex items-center justify-center mb-2 sm:mb-3`}>
+              <c.icon className={`${c.ic} text-sm sm:text-lg`} />
             </div>
-            <div className="text-2xl font-bold text-gray-900">{c.value}</div>
-            <div className="text-sm text-gray-500">{c.label}</div>
+            <div className="text-lg sm:text-2xl font-bold text-gray-900 truncate">{c.value}</div>
+            <div className="text-xs sm:text-sm text-gray-500">{c.label}</div>
           </motion.div>
         ))}
       </div>
 
       {stats?.bookingsByVehicleType?.length > 0 && (
-        <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100 mb-6">
-          <h2 className="text-lg font-bold text-gray-900 mb-4">Bookings by Vehicle Type</h2>
+        <div className="bg-white rounded-xl sm:rounded-2xl p-4 sm:p-6 shadow-sm border border-gray-100 mb-4 sm:mb-6">
+          <h2 className="text-base sm:text-lg font-bold text-gray-900 mb-4">Bookings by Vehicle Type</h2>
           <div className="space-y-3">
             {stats.bookingsByVehicleType.map((item, i) => {
               const max = Math.max(...stats.bookingsByVehicleType.map(x => x.count || 0));
@@ -67,8 +67,8 @@ export default function Dashboard() {
       )}
 
       {stats?.revenueByBranch?.length > 0 && (
-        <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100 mb-6">
-          <h2 className="text-lg font-bold text-gray-900 mb-4">Revenue by Branch</h2>
+        <div className="bg-white rounded-xl sm:rounded-2xl p-4 sm:p-6 shadow-sm border border-gray-100 mb-4 sm:mb-6">
+          <h2 className="text-base sm:text-lg font-bold text-gray-900 mb-4">Revenue by Branch</h2>
           <div className="space-y-3">
             {stats.revenueByBranch.map((item, i) => {
               const max = Math.max(...stats.revenueByBranch.map(x => x.revenue || 0));
@@ -91,10 +91,11 @@ export default function Dashboard() {
       )}
 
       {stats?.recentBookings?.length > 0 && (
-        <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
-          <h2 className="text-lg font-bold text-gray-900 mb-4">Recent Bookings</h2>
-          <div className="overflow-x-auto">
-            <table className="w-full text-sm">
+        <div className="bg-white rounded-xl sm:rounded-2xl p-4 sm:p-6 shadow-sm border border-gray-100">
+          <h2 className="text-base sm:text-lg font-bold text-gray-900 mb-4">Recent Bookings</h2>
+          <div className="-mx-4 sm:mx-0">
+            <div className="overflow-x-auto px-4 sm:px-0">
+              <table className="w-full text-xs sm:text-sm min-w-[500px]">
               <thead><tr className="text-gray-500 border-b border-gray-200">
                 <th className="text-left py-3 px-2">Vehicle</th><th className="text-left py-3 px-2">Customer</th>
                 <th className="text-left py-3 px-2">Hours</th><th className="text-left py-3 px-2">Amount</th><th className="text-left py-3 px-2">Status</th>
@@ -111,6 +112,7 @@ export default function Dashboard() {
                 ))}
               </tbody>
             </table>
+            </div>
           </div>
         </div>
       )}
