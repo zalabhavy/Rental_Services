@@ -81,8 +81,8 @@ export default function CustomerLayout() {
                 ))}
                 <option value="__new__">+ New Customer</option>
                 <option disabled>──────────</option>
-                <option value="__admin__">⚙ Admin</option>
-                <option value="__home__">🏠 Home</option>
+                <option value="__admin__">Switch to Admin</option>
+                <option value="__home__">Go to Home</option>
               </select>
               <FiChevronDown className="absolute right-2 top-1/2 -translate-y-1/2 text-blue-500 pointer-events-none" size={12} />
             </div>

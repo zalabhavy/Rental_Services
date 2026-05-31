@@ -1,6 +1,7 @@
 import { useEffect, useState, useContext } from 'react';
 import { motion } from 'framer-motion';
 import { FiCalendar, FiClock, FiXCircle, FiCheckCircle, FiAlertCircle, FiEdit2, FiX } from 'react-icons/fi';
+import { Link } from 'react-router-dom';
 import { getBookings, cancelBooking, bookVehicle } from '../../api';
 import { CustomerContext } from '../../App';
 import ConfirmModal from '../../components/ConfirmModal';
@@ -69,8 +70,9 @@ export default function MyBookings() {
       {filtered.length === 0 ? (
         <div className="text-center py-16 bg-white rounded-2xl border border-gray-100">
           <FiCalendar className="mx-auto text-4xl text-gray-300 mb-4" />
-          <h3 className="text-lg font-semibold text-gray-700">No bookings yet</h3>
-          <p className="text-gray-400 mt-1">Book a vehicle to see it here</p>
+          <h3 className="text-lg font-semibold text-gray-700">{!currentCustomer?.name ? 'Start Your Booking' : 'No bookings yet'}</h3>
+          <p className="text-gray-400 mt-1">{!currentCustomer?.name ? 'Browse vehicles and book your first ride!' : 'Book a vehicle to see it here'}</p>
+          <Link to="/customer/vehicles" className="inline-flex items-center gap-1 mt-4 text-blue-600 text-sm font-medium hover:gap-2 transition-all">Browse Vehicles →</Link>
         </div>
       ) : (
         <div className="space-y-3">
