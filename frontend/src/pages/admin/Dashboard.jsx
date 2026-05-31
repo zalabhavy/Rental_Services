@@ -92,18 +92,16 @@ export default function Dashboard() {
 
       {stats?.recentBookings?.length > 0 && (
         <div className="bg-white rounded-xl sm:rounded-2xl p-4 sm:p-6 shadow-sm border border-gray-100">
-          <h2 className="text-base sm:text-lg font-bold text-gray-900 mb-4">Recent Bookings</h2>
-          <div className="space-y-2">
+          <h2 className="text-base sm:text-lg font-bold text-gray-900 mb-3">Recent Bookings</h2>
+          <div className="grid grid-cols-[1fr_auto_auto] gap-x-4 text-xs text-gray-400 pb-2 border-b border-gray-200 mb-1">
+            <span>Vehicle</span><span>Amount</span><span className="text-right">Status</span>
+          </div>
+          <div className="space-y-0">
             {stats.recentBookings.map((b, i) => (
-              <div key={i} className="flex items-center justify-between py-2.5 border-b border-gray-100 last:border-0">
-                <div className="min-w-0 flex-1">
-                  <span className="text-sm font-medium text-gray-900">{b.vehicleName || '-'}</span>
-                  <span className="text-xs text-gray-400 ml-2">{b.customerName || ''}</span>
-                </div>
-                <div className="flex items-center gap-3 shrink-0">
-                  <span className="text-sm text-gray-600">₹{b.totalPrice || 0}</span>
-                  <span className={`text-[10px] px-2 py-0.5 rounded-full ${b.status === 'ACTIVE' ? 'bg-amber-100 text-amber-700' : b.status === 'COMPLETED' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}`}>{b.status}</span>
-                </div>
+              <div key={i} className="grid grid-cols-[1fr_auto_auto] gap-x-4 items-center py-2.5 border-b border-gray-50 last:border-0">
+                <span className="text-sm font-medium text-gray-900 truncate">{b.vehicleName || '-'}</span>
+                <span className="text-sm font-semibold text-gray-700">₹{b.totalPrice || 0}</span>
+                <span className={`text-[10px] px-2 py-0.5 rounded-full text-right ${b.status === 'ACTIVE' ? 'bg-amber-100 text-amber-700' : b.status === 'COMPLETED' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}`}>{b.status}</span>
               </div>
             ))}
           </div>
