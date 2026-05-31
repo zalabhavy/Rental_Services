@@ -97,6 +97,8 @@ export default function Dashboard() {
             <thead>
               <tr className="text-xs text-gray-400 border-b border-gray-200">
                 <th className="text-left pb-2 font-medium">Vehicle</th>
+                <th className="text-left pb-2 font-medium hidden sm:table-cell">Customer</th>
+                <th className="text-right pb-2 font-medium hidden sm:table-cell">Hours</th>
                 <th className="text-right pb-2 font-medium">Amount</th>
                 <th className="text-right pb-2 font-medium w-24">Status</th>
               </tr>
@@ -105,6 +107,8 @@ export default function Dashboard() {
               {stats.recentBookings.map((b, i) => (
                 <tr key={i} className="border-b border-gray-50 last:border-0">
                   <td className="py-3 text-sm font-medium text-gray-900">{b.vehicleName || '-'}</td>
+                  <td className="py-3 text-sm text-gray-500 hidden sm:table-cell">{b.customerName || '-'}</td>
+                  <td className="py-3 text-sm text-gray-500 text-right hidden sm:table-cell">{b.startTime != null && b.endTime != null ? `${b.endTime - b.startTime}h` : '-'}</td>
                   <td className="py-3 text-sm font-semibold text-gray-700 text-right">₹{b.totalPrice || 0}</td>
                   <td className="py-3 text-right">
                     <span className={`text-[10px] px-2.5 py-1 rounded-full inline-block ${b.status === 'ACTIVE' ? 'bg-amber-50 text-amber-600' : b.status === 'COMPLETED' ? 'bg-green-50 text-green-600' : 'bg-red-50 text-red-600'}`}>{b.status}</span>
