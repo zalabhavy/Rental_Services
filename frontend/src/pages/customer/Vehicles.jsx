@@ -66,12 +66,14 @@ export default function Vehicles() {
           </div>
           <div className="grid grid-cols-2 gap-2">
             <select value={typeFilter} onChange={e => setTypeFilter(e.target.value)}
-              className="px-3 pr-8 py-2 sm:py-2.5 rounded-lg sm:rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500 text-xs sm:text-sm bg-white">
+              style={{paddingRight: '2rem'}}
+              className="px-3 py-2 sm:py-2.5 rounded-lg sm:rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500 text-xs sm:text-sm bg-white w-full">
               <option value="">All Types</option>
               {types.map(t => <option key={t} value={t}>{t}</option>)}
             </select>
             <select value={branchFilter} onChange={e => setBranchFilter(e.target.value)}
-              className="px-3 pr-8 py-2 sm:py-2.5 rounded-lg sm:rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500 text-xs sm:text-sm bg-white">
+              style={{paddingRight: '2rem'}}
+              className="px-3 py-2 sm:py-2.5 rounded-lg sm:rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500 text-xs sm:text-sm bg-white w-full">
               <option value="">All Branches</option>
               {branches.map(b => <option key={b.branchId} value={b.branchId}>{b.branchName}</option>)}
             </select>

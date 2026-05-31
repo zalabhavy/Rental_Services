@@ -2,7 +2,7 @@
 
 A full-stack vehicle rental management system built with **Spring Boot** and **React**.
 
-**Live Demo:** [Frontend](https://your-frontend.vercel.app) | [API Docs](https://your-backend.onrender.com/swagger-ui.html)
+**Live Demo:** [Frontend](https://rental-services-bhavy.vercel.app) | [API Docs](https://rentwheels-api-hp4w.onrender.com/swagger-ui.html)
 
 ## Tech Stack
 
