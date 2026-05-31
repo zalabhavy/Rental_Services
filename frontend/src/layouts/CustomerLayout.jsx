@@ -35,11 +35,15 @@ export default function CustomerLayout() {
   }, []);
 
   const handleCustomerChange = (e) => {
-    const name = e.target.value;
-    if (name === '__new__') {
+    const val = e.target.value;
+    if (val === '__new__') {
       setCurrentCustomer({ name: '', email: '', phone: '' });
+    } else if (val === '__admin__') {
+      navigate('/admin');
+    } else if (val === '__home__') {
+      navigate('/');
     } else {
-      const c = customers.find(c => c.name === name);
+      const c = customers.find(c => c.name === val);
       if (c) setCurrentCustomer(c);
     }
   };
@@ -76,8 +80,9 @@ export default function CustomerLayout() {
                   <option key={c.name} value={c.name}>{c.name}</option>
                 ))}
                 <option value="__new__">+ New Customer</option>
-                <option value="" disabled>──────────</option>
-                <option value="__admin__" onClick={() => navigate('/admin')}>Switch to Admin</option>
+                <option disabled>──────────</option>
+                <option value="__admin__">Switch to Admin</option>
+                <option value="__home__">Home</option>
               </select>
               <FiChevronDown className="absolute right-2 top-1/2 -translate-y-1/2 text-blue-500 pointer-events-none" size={12} />
             </div>

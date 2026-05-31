@@ -51,33 +51,35 @@ export default function Vehicles() {
 
   return (
     <div>
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold text-gray-900">Vehicle Catalog</h1>
-        <p className="text-gray-500 mt-1">Browse and book from our premium fleet</p>
+      <div className="mb-4 sm:mb-8">
+        <h1 className="text-xl sm:text-3xl font-bold text-gray-900">Vehicle Catalog</h1>
+        <p className="text-gray-500 mt-1 text-xs sm:text-base">Browse and book from our premium fleet</p>
       </div>
 
       {/* Filters */}
-      <div className="bg-white rounded-2xl p-4 shadow-sm border border-gray-100 mb-8">
-        <div className="flex flex-col md:flex-row gap-4">
+      <div className="bg-white rounded-xl sm:rounded-2xl p-3 sm:p-4 shadow-sm border border-gray-100 mb-4 sm:mb-8">
+        <div className="flex flex-col gap-2 sm:gap-4 sm:flex-row">
           <div className="flex-1 relative">
-            <FiSearch className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
+            <FiSearch className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={14} />
             <input type="text" placeholder="Search vehicles..." value={search} onChange={e => setSearch(e.target.value)}
-              className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm" />
+              className="w-full pl-9 pr-3 py-2 sm:py-2.5 rounded-lg sm:rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500 text-xs sm:text-sm" />
           </div>
-          <select value={typeFilter} onChange={e => setTypeFilter(e.target.value)}
-            className="px-4 py-2.5 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm bg-white">
-            <option value="">All Types</option>
-            {types.map(t => <option key={t} value={t}>{t}</option>)}
-          </select>
-          <select value={branchFilter} onChange={e => setBranchFilter(e.target.value)}
-            className="px-4 py-2.5 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm bg-white">
-            <option value="">All Branches</option>
-            {branches.map(b => <option key={b.branchId} value={b.branchId}>{b.branchName}</option>)}
-          </select>
+          <div className="grid grid-cols-2 gap-2">
+            <select value={typeFilter} onChange={e => setTypeFilter(e.target.value)}
+              className="px-3 py-2 sm:py-2.5 rounded-lg sm:rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500 text-xs sm:text-sm bg-white">
+              <option value="">All Types</option>
+              {types.map(t => <option key={t} value={t}>{t}</option>)}
+            </select>
+            <select value={branchFilter} onChange={e => setBranchFilter(e.target.value)}
+              className="px-3 py-2 sm:py-2.5 rounded-lg sm:rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500 text-xs sm:text-sm bg-white">
+              <option value="">All Branches</option>
+              {branches.map(b => <option key={b.branchId} value={b.branchId}>{b.branchName}</option>)}
+            </select>
+          </div>
         </div>
       </div>
 
-      <p className="text-sm text-gray-500 mb-4">{filtered.length} vehicle{filtered.length !== 1 ? 's' : ''} found</p>
+      <p className="text-xs sm:text-sm text-gray-500 mb-3 sm:mb-4">{filtered.length} vehicle{filtered.length !== 1 ? 's' : ''} found</p>
 
       {filtered.length === 0 ? (
         <div className="text-center py-16 bg-white rounded-2xl border border-gray-100">
@@ -86,28 +88,27 @@ export default function Vehicles() {
           <p className="text-gray-400 mt-1">Try adjusting your filters</p>
         </div>
       ) : (
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-6">
           {filtered.map((v, i) => (
             <motion.div key={v.vehicleId} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.05 * i }}>
               <Link to={`/customer/vehicles/${v.vehicleId}`} className="block group">
-                <div className="bg-white rounded-2xl overflow-hidden shadow-sm border border-gray-100 hover:shadow-lg transition-all hover:-translate-y-1">
-                  <div className="h-48 bg-gray-100 overflow-hidden">
+                <div className="bg-white rounded-xl sm:rounded-2xl overflow-hidden shadow-sm border border-gray-100 hover:shadow-lg transition-all hover:-translate-y-1">
+                  <div className="h-28 sm:h-48 bg-gray-100 overflow-hidden relative">
                     <img src={getVehicleImage(v)} alt={v.vehicleName}
                       onError={handleImgError}
                       className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" />
+                    <span className="absolute top-1.5 left-1.5 sm:top-2 sm:left-2 text-[10px] sm:text-xs bg-white/90 backdrop-blur-sm text-blue-600 px-1.5 sm:px-2 py-0.5 rounded-md sm:rounded-lg font-medium">{v.vehicleType}</span>
                   </div>
-                  <div className="p-5">
-                    <div className="flex items-center justify-between mb-2">
-                      <span className="text-xs bg-blue-50 text-blue-600 px-2 py-1 rounded-lg font-medium">{v.vehicleType}</span>
-                        {v.available !== false
-                          ? <span className="text-xs text-green-600 flex items-center gap-1"><FiCheckCircle /> Available</span>
-                          : <span className="text-xs text-amber-600 flex items-center gap-1">🔒 Booked</span>}
+                  <div className="p-3 sm:p-4">
+                    <div className="flex items-center justify-between mb-1">
+                      <h3 className="text-xs sm:text-base font-bold text-gray-900 truncate flex-1">{v.vehicleName}</h3>
                     </div>
-                    <h3 className="text-lg font-bold text-gray-900">{v.vehicleName}</h3>
-                    {branchMap[v.branchId] && <p className="text-xs text-gray-400 mt-1">📍 {branchMap[v.branchId]}</p>}
-                    <div className="flex items-center justify-between mt-3">
-                      <span className="text-2xl font-black text-blue-600">₹{v.pricePerHour}<span className="text-sm font-normal text-gray-400">/hr</span></span>
-                      <span className="text-blue-600 group-hover:translate-x-1 transition-transform"><FiArrowRight /></span>
+                    {branchMap[v.branchId] && <p className="text-[10px] sm:text-xs text-gray-400 truncate">📍 {branchMap[v.branchId]}</p>}
+                    <div className="flex items-center justify-between mt-1.5 sm:mt-3">
+                      <span className="text-sm sm:text-xl font-black text-blue-600">₹{v.pricePerHour}<span className="text-[10px] sm:text-xs font-normal text-gray-400">/hr</span></span>
+                      <span className="text-[10px] sm:text-xs flex items-center gap-0.5">{v.available !== false
+                        ? <span className="text-green-600 flex items-center gap-0.5"><FiCheckCircle size={10} /> <span className="hidden sm:inline">Available</span></span>
+                        : <span className="text-amber-600">🔒</span>}</span>
                     </div>
                   </div>
                 </div>

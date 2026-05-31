@@ -46,11 +46,11 @@ export default function AdminBookings() {
         <p className="text-gray-500 mt-1 text-sm">View and manage all bookings</p>
       </div>
 
-      <div className="flex flex-wrap gap-1.5 sm:gap-2 mb-4 sm:mb-6">
+      <div className="grid grid-cols-4 gap-1.5 sm:flex sm:flex-wrap sm:gap-2 mb-4 sm:mb-6">
         {['ALL', 'ACTIVE', 'COMPLETED', 'CANCELLED'].map(f => (
           <button key={f} onClick={() => setFilter(f)}
-            className={`px-3 sm:px-4 py-1.5 sm:py-2 rounded-lg sm:rounded-xl text-xs sm:text-sm font-medium transition whitespace-nowrap ${filter === f ? 'bg-purple-600 text-white' : 'bg-white text-gray-600 hover:bg-gray-100 border border-gray-200'}`}>
-            {f} ({counts[f]})
+            className={`px-2 sm:px-4 py-1.5 sm:py-2 rounded-lg sm:rounded-xl text-[10px] sm:text-sm font-medium transition text-center ${filter === f ? 'bg-purple-600 text-white' : 'bg-white text-gray-600 hover:bg-gray-100 border border-gray-200'}`}>
+            {f === 'CANCELLED' ? 'CANCEL' : f} <span className="hidden sm:inline">({counts[f]})</span>
           </button>
         ))}
       </div>
