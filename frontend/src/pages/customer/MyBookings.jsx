@@ -21,10 +21,9 @@ export default function MyBookings() {
   };
   useEffect(() => { load(); }, []);
 
-  // Filter by selected customer
-  const filtered = currentCustomer?.name
-    ? bookings.filter(b => b.customerName === currentCustomer.name)
-    : bookings;
+  // Filter by selected customer — new customer sees empty
+  const isNewCustomer = !currentCustomer?.name;
+  const filtered = isNewCustomer ? [] : bookings.filter(b => b.customerName === currentCustomer.name);
 
   const handleCancel = async () => {
     const id = confirmCancel;
