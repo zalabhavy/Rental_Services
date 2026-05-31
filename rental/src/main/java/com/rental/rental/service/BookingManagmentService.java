@@ -180,6 +180,8 @@ public class BookingManagmentService implements IBookingManagmentService {
             Map<String, Object> m = new HashMap<>();
             m.put("bookingId", b.getBookedVehicleId());
             m.put("customerName", b.getCustomerName());
+            m.put("startTime", b.getStartTime());
+            m.put("endTime", b.getEndTime());
             m.put("status", b.getStatus());
             m.put("totalPrice", b.getTotalPrice());
             m.put("bookingDate", b.getBookingDate());

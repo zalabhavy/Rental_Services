@@ -76,6 +76,7 @@ export default function Home() {
             {(() => {
               const seen = new Set();
               return vehicles.filter(v => {
+                if (v.available === false) return false;
                 if (seen.has(v.vehicleName)) return false;
                 seen.add(v.vehicleName);
                 return true;

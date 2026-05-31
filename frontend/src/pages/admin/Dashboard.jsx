@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
-import { FiMapPin, FiTruck, FiCalendar, FiDollarSign, FiTrendingUp, FiActivity, FiCheckCircle } from 'react-icons/fi';
+import { FiMapPin, FiTruck, FiCalendar, FiDollarSign, FiActivity, FiCheckCircle } from 'react-icons/fi';
 import { getDashboardStats } from '../../api';
 
 export default function Dashboard() {
@@ -20,7 +20,6 @@ export default function Dashboard() {
     { icon: FiActivity, label: 'Active (Booked)', value: stats.activeBookings, bg: 'bg-amber-50', ic: 'text-amber-600' },
     { icon: FiCheckCircle, label: 'Completed', value: stats.completedBookings || 0, bg: 'bg-green-50', ic: 'text-green-600' },
     { icon: FiDollarSign, label: 'Total Revenue', value: `₹${(stats.totalRevenue || 0).toLocaleString()}`, bg: 'bg-emerald-50', ic: 'text-emerald-600' },
-    { icon: FiTrendingUp, label: 'Cancelled', value: stats.cancelledBookings, bg: 'bg-red-50', ic: 'text-red-600' },
   ] : [];
 
   return (
@@ -105,7 +104,7 @@ export default function Dashboard() {
                   <tr key={i} className="border-b border-gray-100">
                     <td className="py-3 px-2 text-gray-900 font-medium">{b.vehicleName || '-'}</td>
                     <td className="py-3 px-2 text-gray-600">{b.customerName || '-'}</td>
-                    <td className="py-3 px-2 text-gray-600">{b.startTime}-{b.endTime}</td>
+                    <td className="py-3 px-2 text-gray-600">{b.startTime != null && b.endTime != null ? `${b.startTime}:00-${b.endTime}:00 (${b.endTime - b.startTime}h)` : '-'}</td>
                     <td className="py-3 px-2 text-gray-600">₹{b.totalPrice || 0}</td>
                     <td className="py-3 px-2"><span className={`text-xs px-2 py-1 rounded-full ${b.status === 'ACTIVE' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}`}>{b.status}</span></td>
                   </tr>

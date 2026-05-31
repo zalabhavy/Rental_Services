@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
-import { FiCalendar, FiClock, FiXCircle, FiCheckCircle, FiAlertCircle } from 'react-icons/fi';
-import { getBookings, cancelBooking } from '../../api';
+import { FiCalendar, FiClock, FiXCircle, FiCheckCircle, FiAlertCircle, FiEdit2, FiX } from 'react-icons/fi';
+import { getBookings, cancelBooking, bookVehicle } from '../../api';
 import ConfirmModal from '../../components/ConfirmModal';
 import toast from 'react-hot-toast';
 
@@ -9,6 +9,8 @@ export default function MyBookings() {
   const [bookings, setBookings] = useState([]);
   const [loading, setLoading] = useState(true);
   const [confirmCancel, setConfirmCancel] = useState(null);
+  const [editBooking, setEditBooking] = useState(null);
+  const [editForm, setEditForm] = useState({ startTime: '', endTime: '', customerName: '', customerEmail: '', customerPhone: '' });
 
   const load = () => {
     setLoading(true);
@@ -18,9 +20,7 @@ export default function MyBookings() {
       .finally(() => setLoading(false));
   };
 
-  useEffect(() => {
-    load();
-  }, []);
+  useEffect(() => { load(); }, []);
 
   const handleCancel = async () => {
     const id = confirmCancel;
@@ -34,18 +34,52 @@ export default function MyBookings() {
     }
   };
 
+  const openEdit = (b) => {
+    setEditBooking(b);
+    setEditForm({
+      startTime: b.startTime || '',
+      endTime: b.endTime || '',
+      customerName: b.customerName || '',
+      customerEmail: b.customerEmail || '',
+      customerPhone: '',
+    });
+  };
+
+  const handleEdit = async (e) => {
+    e.preventDefault();
+    if (!editForm.startTime || !editForm.endTime) return toast.error('Select time slots');
+    if (Number(editForm.startTime) >= Number(editForm.endTime)) return toast.error('End time must be after start time');
+
+    try {
+      // Cancel old booking then create new one
+      await cancelBooking(editBooking.bookingId);
+      await bookVehicle({
+        vehicleName: editBooking.vehicleName,
+        vehicleType: editBooking.vehicleType,
+        startTime: Number(editForm.startTime),
+        endTime: Number(editForm.endTime),
+        customerName: editForm.customerName,
+        customerEmail: editForm.customerEmail,
+        customerPhone: editForm.customerPhone,
+      });
+      toast.success('Booking updated successfully!');
+      setEditBooking(null);
+      load();
+    } catch (err) {
+      toast.error(err.response?.data?.message || 'Update failed');
+    }
+  };
+
   const statusColors = {
-    ACTIVE: 'bg-green-100 text-green-700',
+    ACTIVE: 'bg-amber-100 text-amber-700',
+    COMPLETED: 'bg-green-100 text-green-700',
     CANCELLED: 'bg-red-100 text-red-700',
   };
-  const statusIcons = {
-    ACTIVE: FiCheckCircle,
-    CANCELLED: FiXCircle,
-  };
+  const statusIcons = { ACTIVE: FiCheckCircle, COMPLETED: FiCheckCircle, CANCELLED: FiXCircle };
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center h-64">
+      <div className="flex items-center justify-center min-h-[60vh]">
         <div className="animate-spin w-8 h-8 border-4 border-blue-500 border-t-transparent rounded-full"></div>
       </div>
     );
@@ -82,11 +116,7 @@ export default function MyBookings() {
                       <h3 className="text-lg font-bold text-gray-900">
                         {b.vehicleName || b.vehicleType}
                       </h3>
-                      <span
-                        className={`text-xs px-2 py-1 rounded-full font-medium flex items-center gap-1 ${
-                          statusColors[b.status] || 'bg-gray-100 text-gray-600'
-                        }`}
-                      >
+                      <span className={`text-xs px-2 py-1 rounded-full font-medium flex items-center gap-1 ${statusColors[b.status] || 'bg-gray-100 text-gray-600'}`}>
                         <StatusIcon size={12} /> {b.status}
                       </span>
                     </div>
@@ -110,17 +140,71 @@ export default function MyBookings() {
                     )}
                   </div>
                   {b.status === 'ACTIVE' && (
-                    <button
-                      onClick={() => setConfirmCancel(b.bookingId)}
-                      className="px-4 py-2.5 bg-red-50 text-red-600 rounded-xl text-sm font-medium hover:bg-red-100 transition flex items-center justify-center gap-1 w-full sm:w-auto"
-                    >
-                      <FiXCircle size={14} /> Cancel
-                    </button>
+                    <div className="flex gap-2 w-full sm:w-auto">
+                      <button
+                        onClick={() => openEdit(b)}
+                        className="flex-1 sm:flex-none px-4 py-2.5 bg-blue-50 text-blue-600 rounded-xl text-sm font-medium hover:bg-blue-100 transition flex items-center justify-center gap-1"
+                      >
+                        <FiEdit2 size={14} /> Edit
+                      </button>
+                      <button
+                        onClick={() => setConfirmCancel(b.bookingId)}
+                        className="flex-1 sm:flex-none px-4 py-2.5 bg-red-50 text-red-600 rounded-xl text-sm font-medium hover:bg-red-100 transition flex items-center justify-center gap-1"
+                      >
+                        <FiXCircle size={14} /> Cancel
+                      </button>
+                    </div>
                   )}
                 </div>
               </motion.div>
             );
           })}
+        </div>
+      )}
+
+      {/* Edit Booking Modal */}
+      {editBooking && (
+        <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-end sm:items-center justify-center z-50 p-0 sm:p-4">
+          <motion.div initial={{ opacity: 0, y: 40 }} animate={{ opacity: 1, y: 0 }}
+            className="bg-white rounded-t-2xl sm:rounded-2xl p-6 w-full sm:max-w-md shadow-2xl border border-gray-100">
+            <div className="flex items-center justify-between mb-6">
+              <h2 className="text-xl font-bold text-gray-900">Edit Booking</h2>
+              <button onClick={() => setEditBooking(null)} className="text-gray-400 hover:text-gray-600 p-1"><FiX size={20} /></button>
+            </div>
+            <div className="bg-blue-50 rounded-xl p-3 mb-4 text-sm text-blue-700">
+              🚗 {editBooking.vehicleName} — {editBooking.vehicleType}
+            </div>
+            <form onSubmit={handleEdit} className="space-y-4">
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="text-sm font-medium text-gray-700 block mb-1">Start Hour</label>
+                  <select value={editForm.startTime} onChange={e => setEditForm(f => ({...f, startTime: e.target.value}))}
+                    className="w-full px-3 py-2.5 rounded-xl border border-gray-200 focus:ring-2 focus:ring-blue-500 focus:outline-none text-sm">
+                    <option value="">Select</option>
+                    {Array.from({length: 24}, (_, i) => <option key={i} value={i}>{String(i).padStart(2, '0')}:00</option>)}
+                  </select>
+                </div>
+                <div>
+                  <label className="text-sm font-medium text-gray-700 block mb-1">End Hour</label>
+                  <select value={editForm.endTime} onChange={e => setEditForm(f => ({...f, endTime: e.target.value}))}
+                    className="w-full px-3 py-2.5 rounded-xl border border-gray-200 focus:ring-2 focus:ring-blue-500 focus:outline-none text-sm">
+                    <option value="">Select</option>
+                    {Array.from({length: 24}, (_, i) => <option key={i} value={i}>{String(i).padStart(2, '0')}:00</option>)}
+                  </select>
+                </div>
+              </div>
+              <input type="text" placeholder="Your Name" value={editForm.customerName} onChange={e => setEditForm(f => ({...f, customerName: e.target.value}))}
+                className="w-full px-3 py-2.5 rounded-xl border border-gray-200 focus:ring-2 focus:ring-blue-500 focus:outline-none text-sm" />
+              <input type="email" placeholder="Your Email" value={editForm.customerEmail} onChange={e => setEditForm(f => ({...f, customerEmail: e.target.value}))}
+                className="w-full px-3 py-2.5 rounded-xl border border-gray-200 focus:ring-2 focus:ring-blue-500 focus:outline-none text-sm" />
+              <input type="tel" placeholder="Your Phone" value={editForm.customerPhone} onChange={e => setEditForm(f => ({...f, customerPhone: e.target.value}))}
+                className="w-full px-3 py-2.5 rounded-xl border border-gray-200 focus:ring-2 focus:ring-blue-500 focus:outline-none text-sm" />
+              <div className="flex gap-3 pt-2">
+                <button type="button" onClick={() => setEditBooking(null)} className="flex-1 px-4 py-3 sm:py-2.5 bg-gray-100 text-gray-600 rounded-xl text-sm hover:bg-gray-200 transition">Cancel</button>
+                <button type="submit" className="flex-1 px-4 py-3 sm:py-2.5 bg-blue-600 text-white rounded-xl text-sm font-medium hover:bg-blue-700 transition">Update Booking</button>
+              </div>
+            </form>
+          </motion.div>
         </div>
       )}
 
