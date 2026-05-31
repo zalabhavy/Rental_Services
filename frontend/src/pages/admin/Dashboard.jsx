@@ -93,18 +93,26 @@ export default function Dashboard() {
       {stats?.recentBookings?.length > 0 && (
         <div className="bg-white rounded-xl sm:rounded-2xl p-4 sm:p-6 shadow-sm border border-gray-100">
           <h2 className="text-base sm:text-lg font-bold text-gray-900 mb-3">Recent Bookings</h2>
-          <div className="grid grid-cols-[1fr_auto_auto] gap-x-4 text-xs text-gray-400 pb-2 border-b border-gray-200 mb-1">
-            <span>Vehicle</span><span>Amount</span><span className="text-right">Status</span>
-          </div>
-          <div className="space-y-0">
-            {stats.recentBookings.map((b, i) => (
-              <div key={i} className="grid grid-cols-[1fr_auto_auto] gap-x-4 items-center py-2.5 border-b border-gray-50 last:border-0">
-                <span className="text-sm font-medium text-gray-900 truncate">{b.vehicleName || '-'}</span>
-                <span className="text-sm font-semibold text-gray-700">₹{b.totalPrice || 0}</span>
-                <span className={`text-[10px] px-2 py-0.5 rounded-full text-right ${b.status === 'ACTIVE' ? 'bg-amber-100 text-amber-700' : b.status === 'COMPLETED' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}`}>{b.status}</span>
-              </div>
-            ))}
-          </div>
+          <table className="w-full text-sm">
+            <thead>
+              <tr className="text-xs text-gray-400 border-b border-gray-200">
+                <th className="text-left pb-2 font-medium">Vehicle</th>
+                <th className="text-right pb-2 font-medium">Amount</th>
+                <th className="text-right pb-2 font-medium w-24">Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              {stats.recentBookings.map((b, i) => (
+                <tr key={i} className="border-b border-gray-50 last:border-0">
+                  <td className="py-3 text-sm font-medium text-gray-900">{b.vehicleName || '-'}</td>
+                  <td className="py-3 text-sm font-semibold text-gray-700 text-right">₹{b.totalPrice || 0}</td>
+                  <td className="py-3 text-right">
+                    <span className={`text-[10px] px-2.5 py-1 rounded-full inline-block ${b.status === 'ACTIVE' ? 'bg-amber-50 text-amber-600' : b.status === 'COMPLETED' ? 'bg-green-50 text-green-600' : 'bg-red-50 text-red-600'}`}>{b.status}</span>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
         </div>
       )}
     </div>
