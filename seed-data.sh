@@ -1,5 +1,5 @@
 #!/bin/bash
-API="http://localhost:8090/api/v1"
+API="${1:-http://localhost:8090/api/v1}"
 
 echo "🏢 Creating Branches..."
 curl -s -X POST "$API/branches" -H "Content-Type: application/json" \
