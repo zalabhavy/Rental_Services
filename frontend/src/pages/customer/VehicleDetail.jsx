@@ -56,6 +56,8 @@ export default function VehicleDetail() {
     if (!form.startTime || !form.endTime) return toast.error('Please select time slots');
     if (Number(form.startTime) >= Number(form.endTime)) return toast.error('End time must be after start time');
     if (!form.customerName.trim()) return toast.error('Please enter your name');
+    if (form.customerEmail && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.customerEmail)) return toast.error('Please enter a valid email');
+    if (form.customerPhone && !/^\d{10}$/.test(form.customerPhone)) return toast.error('Phone number must be exactly 10 digits');
     setBooking(true);
     try {
       await bookVehicle({
@@ -139,7 +141,7 @@ export default function VehicleDetail() {
                 className="w-full px-3 py-2.5 rounded-xl border border-gray-200 focus:ring-2 focus:ring-blue-500 focus:outline-none text-sm" />
               <input type="email" placeholder="Your Email" value={form.customerEmail} onChange={e => setForm(f => ({...f, customerEmail: e.target.value}))}
                 className="w-full px-3 py-2.5 rounded-xl border border-gray-200 focus:ring-2 focus:ring-blue-500 focus:outline-none text-sm" />
-              <input type="tel" placeholder="Your Phone" value={form.customerPhone} onChange={e => setForm(f => ({...f, customerPhone: e.target.value}))}
+              <input type="tel" placeholder="Phone (10 digits)" value={form.customerPhone} maxLength={10} onChange={e => setForm(f => ({...f, customerPhone: e.target.value.replace(/\D/g, '').slice(0, 10)}))}
                 className="w-full px-3 py-2.5 rounded-xl border border-gray-200 focus:ring-2 focus:ring-blue-500 focus:outline-none text-sm" />
 
               {hours > 0 && (
