@@ -1,6 +1,7 @@
 import axios from 'axios';
 
-// Set VITE_API_URL in Vercel env vars to your Render backend URL\nconst API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:8090';
+// Set VITE_API_URL in Vercel env vars to your Render backend URL
+const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:8090';
 
 const api = axios.create({
   baseURL: `${API_BASE}/api/v1`,
